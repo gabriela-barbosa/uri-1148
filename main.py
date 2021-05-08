@@ -1,37 +1,58 @@
 n, e = map(int, input().split())
-route = []
-v = n + 1
-a = e
+MAX = 99999
 
-NUM_MAX = 9999
 
-def dijkstra (origin, destiny):
+def init_array(array, size):
+    for r in range(size):
+        line = []
+        for s in range(size):
+            element = 0
+            if r != s:
+                element = MAX
+            line.append(element)
+        array.append(line)
+
+
+def dijkstra(origin, destiny, vert, map):
+    mark, cost = [], []
+    for i in range(vert):
+        cost.append(MAX)
+        mark.append(0)
+    cost[origin] = 0
+    current = origin
+    while current != destiny:
+        min = MAX
+        mark[current] = 1
+        for j in range(vert):
+            if cost[j] > cost[current] + map[current][j]:
+                cost[j] = cost[current] + map[current][j]
+            if cost[j] < min and not (mark[j]):
+                min = cost[j]
+                current = j
+        if min == MAX:
+            print("Nao e possivel entregar a carta")
+            return
+    print(cost[destiny])
 
 
 while n != 0 and e != 0:
-    items = []
-    consult = []
+    route = []
 
     if not (1 <= n <= 500 and 0 <= e <= n * n):
         exit()
 
-    for i in range(n):
-        line = []
-        for j in range(n):
-            line.append(NUM_MAX)
-        route.append(line)
+    init_array(route, n)
     for i in range(e):
         x, y, h = map(int, input().split())
-        # items.append((x, y, h))
 
         if not (1 <= x and y <= n and 1 <= h <= 1000):
             exit()
 
-        if route[x][y] == NUM_MAX:
-            route[x][y] = h
+        if route[y - 1][x - 1] != MAX:
+            route[x - 1][y - 1] = 0
+            route[y - 1][x - 1] = 0
         else:
-            route[x][y] = 0
-            route[y][x] = 0
+            route[x - 1][y - 1] = h
 
     k = int(input())
 
@@ -39,7 +60,5 @@ while n != 0 and e != 0:
         exit()
     for x in range(k):
         o, d = map(int, input().split())
-        consult.append((o, d))
+        dijkstra(o - 1, d - 1, n, route)
     n, e = map(int, input().split())
-    v = n + 1
-    a = e
